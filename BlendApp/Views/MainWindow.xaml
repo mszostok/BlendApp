@@ -61,11 +61,11 @@
                     Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" />
                 <Slider Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="290,-5,10,0" Minimum="1" Maximum="64" TickPlacement="TopLeft"
                         Cursor="Hand" TickFrequency="1" IsSnapToTickEnabled="True" ToolTip="Zmiana liczby wątków"  Name="slValue" 
-                        Value="{Binding AppSettings.TreadNumer, UpdateSourceTrigger=PropertyChanged}" />
+                        Value="{Binding AppSettings.ThreadNumer, UpdateSourceTrigger=PropertyChanged}" />
 
                 <!-- Rekomendowa liczba dostępnych wątków -->
                 <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="270,10,0,0" Foreground="White"
-                   Content="{Binding AppSettings.TreadNumberRecomended}" />
+                   Content="{Binding AppSettings.ThreadNumberRecomended}" />
 
 
                 <!-- Wybór biblioteki -->

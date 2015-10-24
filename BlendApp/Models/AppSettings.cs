@@ -6,38 +6,38 @@
     public class AppSettings : INotifyPropertyChanged, IDataErrorInfo
     {
 
-        #region TreadNumberRecomended
-        private int treadNumberRecomended = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
-        public int TreadNumerRecomended
+        #region ThreadNumberRecomended
+        private int threadNumberRecomended = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
+        public int ThreadNumerRecomended
         {
             get
             {
-                return treadNumberRecomended;
+                return threadNumberRecomended;
             }
             set
             {
-                if (treadNumberRecomended != value)
+                if (threadNumberRecomended != value)
                 {
-                    treadNumberRecomended = value;
+                    threadNumberRecomended = value;
                     RaisePropertyChanged("TreadNumberRecomended");
                 }
             }
         }
         #endregion
 
-        #region TreadCount
-        private int treadNumber = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
-        public int TreadNumer
+        #region ThreadCount
+        private int threadNumber = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
+        public int ThreadNumer
         {
             get
             {
-                return treadNumber;
+                return threadNumber;
             }
             set
             {
-                if (treadNumber != value)
+                if (threadNumber != value)
                 {
-                    treadNumber = value;
+                    threadNumber = value;
                     RaisePropertyChanged("TreadNumber");
                 }
             }

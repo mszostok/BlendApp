@@ -58,7 +58,7 @@ namespace BlendApp.ViewModels
         #region Functions
         public void BlendImages()
         {
-            Debug.Assert(false, String.Format("Liczba watkow: {0} ", AppSettings.TreadNumer));
+            Debug.Assert(false, String.Format("Liczba watkow: {0} ", AppSettings.ThreadNumer));
 
         }
 
