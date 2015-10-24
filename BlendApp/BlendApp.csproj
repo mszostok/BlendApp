@@ -55,6 +55,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\BlendAppSettingsCommand.cs" />
     <Compile Include="Commands\ImgSelectAppSettingsCommand.cs" />
+    <Compile Include="Models\BlendImagesSystem.cs" />
     <Compile Include="Models\WindowData.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\MainWindow.xaml">

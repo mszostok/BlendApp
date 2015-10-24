@@ -2,7 +2,6 @@
 namespace BlendApp.ViewModels
 {
     using BlendApp.Commands;
-    // using BlendApp.Commands;
     using BlendApp.Models;
     using System;
     using System.Diagnostics;
@@ -56,12 +55,6 @@ namespace BlendApp.ViewModels
         #endregion
 
         #region Functions
-        public void BlendImages()
-        {
-            Debug.Assert(false, String.Format("Liczba watkow: {0} ", AppSettings.ThreadNumer));
-
-        }
-
         private string OpenDialog()
         {
             // Utworzenie dialogu do wyboru katalogu
@@ -80,6 +73,23 @@ namespace BlendApp.ViewModels
                 return dlg.FileName;
             }
             return "";
+        }
+
+        private void ShowResult()
+        {
+            window.IsExpanded = false;
+        }
+
+        public void BlendImages()
+        {
+            //BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings); - tu jakiś catch
+            //viewModel.ShowResult(); jak wyszystko ok to zmieniamy na result
+
+            BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings);
+            blendSystem.BlendImages();
+            ShowResult();
+            //Debug.Assert(false, String.Format("Liczba watkow: {0} ", 1);
+
         }
 
         public void Img1Select()

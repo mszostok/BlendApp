@@ -1,8 +1,8 @@
 ﻿namespace BlendApp.Commands
 {
-    using BlendApp.ViewModels;
     using System;
     using System.Windows.Input;
+    using BlendApp.ViewModels;
 
     class BlendAppSettingsCommand : ICommand
     {
@@ -16,8 +16,6 @@
             viewModel = view;
         }
         #endregion
-
-       
 
         #region ICommand Members
         public event System.EventHandler CanExecuteChanged

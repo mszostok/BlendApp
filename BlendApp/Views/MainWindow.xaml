@@ -3,7 +3,151 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Height="430" Width="600" MinHeight="430" MinWidth="600"
 	Title="Property">
-    <Grid Background="White">
+    <Window.Resources>
+        <!-- Animated Expander Button's Template-->
+        <ControlTemplate x:Key="AnimatedExpanderButtonTemp" TargetType="{x:Type ToggleButton}">
+            <Border x:Name="ExpanderButtonBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}"
+                    >
+                <Grid Margin="1,3,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Fill="Transparent"
+                               Grid.ColumnSpan="2"/>
+                    <Rectangle Name="Circle"
+                         Fill="#FF00B9A0"
+                         Grid.Column="0"
+                         
+                         Width="15"
+                         Height="15"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         />
+                    <Path x:Name="Arrow"
+                      Grid.Column="0"
+                      Data="M 1,1.5 L 4.5,5 8,1.5"
+                      Stroke="White"
+                      StrokeThickness="2"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      RenderTransformOrigin="0.5,0.5"
+                      >
+                        <Path.RenderTransform>
+                            <RotateTransform Angle="0"/>
+                        </Path.RenderTransform>
+                    </Path>
+                    <ContentPresenter x:Name="HeaderContent"
+                                      Grid.Column="1"
+                                      Margin="4,0,0,0"
+                                      ContentSource="Content"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <!-- Animate arrow when toggled-->
+                <Trigger Property="IsChecked"
+                         Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="Arrow"
+                                                 Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                 To="180"
+                                                 Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="Arrow"
+                                                 Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                 To="0"
+                                                 Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+
+                <!-- MouseOver, Pressed behaviours-->
+                <Trigger Property="IsMouseOver"
+                                 Value="true">
+                    <Setter Property="Stroke"
+                                    Value="Transparent"
+                                    TargetName="Circle"/>
+                    <Setter Property="Stroke"
+                                    Value="#222"
+                                    TargetName="Arrow"/>
+                </Trigger>
+                <Trigger Property="IsPressed"
+                                 Value="true">
+                    <Setter Property="Stroke"
+                                    Value="#FFFFFF"
+                                    TargetName="Circle"/>
+                    <Setter Property="StrokeThickness"
+                                    Value="1.5"
+                                    TargetName="Circle"/>
+                    <Setter Property="Stroke"
+                                    Value="#FFFFFF"
+                                    TargetName="Arrow"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
+        <!-- Stretch Out Content Expander's Template,
+        Uses: AnimatedExpanderButtonTemp from above-->
+    <ControlTemplate x:Key="StretchyExpanderTemp" TargetType="{x:Type Expander}">
+        <DockPanel>
+            <ToggleButton x:Name="ExpanderButton" 
+                              DockPanel.Dock="Top"
+                              Template="{StaticResource AnimatedExpanderButtonTemp}"
+                              Content="{TemplateBinding Header}"
+                              IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                              OverridesDefaultStyle="True"
+                              Padding="1.5,0">
+            </ToggleButton>
+            <ContentPresenter x:Name="ExpanderContent"
+                                  ContentSource="Content"
+                                  DockPanel.Dock="Bottom"
+                                  >
+                <ContentPresenter.LayoutTransform>
+                    <ScaleTransform ScaleY="0"/>
+                </ContentPresenter.LayoutTransform>
+            </ContentPresenter>
+        </DockPanel>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ExpanderContent"
+                                                 Storyboard.TargetProperty="(ContentPresenter.LayoutTransform).(ScaleTransform.ScaleY)"                                                 
+                                                 To="1"
+                                                 Duration="0:0:0.4"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ExpanderContent"
+                                                 Storyboard.TargetProperty="(ContentPresenter.LayoutTransform).(ScaleTransform.ScaleY)"
+                                                 To="0"
+                                                 Duration="0:0:0.4"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    </Window.Resources>
+    
+        <Grid Background="White">
 
         <!-- Nagłówek Strony -->
         <Image HorizontalAlignment="Left" VerticalAlignment="Top" Height="34" Width="34" Margin="23,15,0,0" Source="/BlendApp;component/Images/logo.bmp" RenderTransformOrigin="0.5,0.5">
@@ -37,14 +181,14 @@
         <Grid Margin="0,80,0,0" Background="#FF1B1B1C">
 
             <!-- Podgląd wynik, domyślnie przesłonięte przez expander -->
-            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,20" Source="/BlendApp;component/Images/logo.bmp"/>
+            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,20"  Source="{Binding AppSettings.ResultImage}"/>
             <Label HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0,0,0,-2" 
                    Foreground="White" Content="Czas wykoniania: xxx ms" />
         </Grid>
 
-        <Expander VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" ExpandDirection="Down"
+        <Expander Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True"
+                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" ExpandDirection="Right"
                   IsExpanded="{Binding Window.IsExpanded, UpdateSourceTrigger=PropertyChanged}">
-
             
             <!-- Ciało expandera  - ustawienia -->
             <Grid Background="#FF1B1B1C" Margin="0,0,0,0">
@@ -61,11 +205,11 @@
                     Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" />
                 <Slider Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="290,-5,10,0" Minimum="1" Maximum="64" TickPlacement="TopLeft"
                         Cursor="Hand" TickFrequency="1" IsSnapToTickEnabled="True" ToolTip="Zmiana liczby wątków"  Name="slValue" 
-                        Value="{Binding AppSettings.ThreadNumer, UpdateSourceTrigger=PropertyChanged}" />
+                        Value="{Binding AppSettings.ThreadNumber, UpdateSourceTrigger=PropertyChanged}" />
 
                 <!-- Rekomendowa liczba dostępnych wątków -->
                 <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="270,10,0,0" Foreground="White"
-                   Content="{Binding AppSettings.ThreadNumberRecomended}" />
+                   Content="{Binding AppSettings.ThreadNumberRecommended}" />
 
 
                 <!-- Wybór biblioteki -->

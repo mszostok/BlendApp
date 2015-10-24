@@ -38,7 +38,7 @@ namespace BlendApp.Models
 
             
         #region IsExpanded
-        private bool isExpanded =true;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
+        private bool isExpanded = true;   
         
         public bool IsExpanded
         {
@@ -52,6 +52,7 @@ namespace BlendApp.Models
                 {
                     isExpanded = value;
                     RaisePropertyChanged("Title");
+                    RaisePropertyChanged("IsExpanded");
                 }
             }
         }

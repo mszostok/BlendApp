@@ -6,28 +6,20 @@
     public class AppSettings : INotifyPropertyChanged, IDataErrorInfo
     {
 
-        #region ThreadNumberRecomended
-        private int threadNumberRecomended = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
-        public int ThreadNumerRecomended
+        public AppSettings()
         {
-            get
-            {
-                return threadNumberRecomended;
-            }
-            set
-            {
-                if (threadNumberRecomended != value)
-                {
-                    threadNumberRecomended = value;
-                    RaisePropertyChanged("TreadNumberRecomended");
-                }
-            }
+            ThreadNumberRecommended = "Rekomendowana liczba wątków : " + CheckNumberOfLogicalProcessor().ToString();  
         }
+
+        #region ThreadNumberRecomended
+        // Liczba rekomendowanej liczby wątków - domyślnie (liczba_wątków_procesora - 1)
+        // (minus jeden bo program główny to pierwszy wątek) 
+        public string ThreadNumberRecommended { get; set; }                                   
         #endregion
 
         #region ThreadCount
-        private int threadNumber = 4;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
-        public int ThreadNumer
+        private int threadNumber = CheckNumberOfLogicalProcessor();   // Liczba wątków ustalona przez użytkownika - domyślnie liczba (logicznych_procesorów -1)
+        public int ThreadNumber
         {
             get
             {
@@ -111,6 +103,28 @@
         }
         #endregion
 
+        #region Result Image
+        private string resultImage;
+        public string ResultImage     
+        {                             
+            get
+            {
+
+                return resultImage;
+            }
+            set
+            {
+                if (resultImage != value)
+                {
+                    resultImage = value;
+                    RaisePropertyChanged("ResultImage");
+                }
+
+            }
+
+        }
+        #endregion
+
         #region INotifyPropertyChanged members
         void RaisePropertyChanged(string prop)
         {
@@ -142,6 +156,13 @@
                 return Error;
             }
 
+        }
+        #endregion
+
+        #region Functions
+        private static int CheckNumberOfLogicalProcessor()
+        {
+            return Environment.ProcessorCount-1;
         }
         #endregion
     }
