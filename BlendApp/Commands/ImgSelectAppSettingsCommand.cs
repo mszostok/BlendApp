@@ -4,61 +4,17 @@
     using System;
     using System.Windows.Input;
 
-    class ImgSelectAppSettingsCommand : ICommand
+    class ImgSelectAppSettingsCommand : BaseCommand
     {
-         #region Members
-        private MainWindowViewModel viewModel;
-        #endregion
 
         #region Constructors
-        public ImgSelectAppSettingsCommand(MainWindowViewModel view)
-        {
-            viewModel = view;
-        }
-        #endregion
-
-        #region Properties
-       
-        #endregion
-
-        #region Functions
-
-        #endregion
-
-        #region Commands
-       
+        public ImgSelectAppSettingsCommand(MainWindowViewModel view) : base(view) { }
         #endregion
 
         #region ICommand Members
-        public event System.EventHandler CanExecuteChanged
+        public override void Execute(object parameter)
         {
-            add
-            {
-                CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-                CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-
-
-        public void Execute(object parameter)
-        {
-            switch(((string)parameter))
-            {
-                case "Img1": viewModel.Img1Select();
-                    break;
-                case "Img2": viewModel.Img2Select();
-                    break;
-            }
-
+            viewModel.OpenDialogForImage((string)parameter);
         }
         #endregion
     }

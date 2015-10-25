@@ -8,8 +8,6 @@
 
     public class BlendImagesSystem
     {
-        
-
         #region Members
         private AppSettings appSettings;
         #endregion
@@ -26,6 +24,10 @@
         #endregion
 
         #region Functions
+        /**
+         * Wyświetlenie dialogu do zapisu bitmapy będącej wynikiem nałożenia
+         * przekazanych obrazów.
+         */
         private void SaveDialog(WriteableBitmap resultBitmap)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -44,11 +46,12 @@
             }
         }
         
+        /**
+         * Główna funkcja realizująca ważone nakładanie obrazów. 
+         * Finalnie stanie się bibliteką C# i będzie dołączana dynamicznie.
+         */
         public void BlendImages()
         {
-
-            try
-            {
                 #region Load Bitmap
                 BitmapImage img1 = new BitmapImage(new Uri(appSettings.Img1Path));
                 BitmapImage img2 = new BitmapImage(new Uri(appSettings.Img2Path));
@@ -68,8 +71,8 @@
 
                 int img1LinePadding; // liczba bajtów wyrównujacych wiersz do wielokrotności 4
                 int img2LinePadding;
-                int img1ModuloFromDivWidthByFour = ((int)img1.Width * 3) % 4;
-                int img2ModuloFromDivWidthByFour = ((int)img2.Width * 3) % 4;
+                int img1ModuloFromDivWidthByFour = ((int)Math.Round(img1.Width) * 3) % 4;
+                int img2ModuloFromDivWidthByFour = ((int)Math.Round(img2.Width) * 3) % 4;
 
                 /**
                  * ustalenie odpowiedniego wyrównania, jeśli wiersz dzieli się przez 4 bez reszty, wtedy w zapisie dodatkowe bajty nie występują
@@ -78,11 +81,11 @@
                 img1LinePadding = (img1ModuloFromDivWidthByFour == 0) ? 0 : (4 - img1ModuloFromDivWidthByFour);
                 img2LinePadding = (img2ModuloFromDivWidthByFour == 0) ? 0 : (4 - img2ModuloFromDivWidthByFour);
 
-                int img1Stride = ((int)img1.Width * 4) + img1LinePadding; // rozmiar wiersza w bajtach
-                int img2Stride = ((int)img2.Width * 4) + img2LinePadding;
+                int img1Stride = ((int)Math.Round(img1.Width) * 4) + img1LinePadding; // rozmiar wiersza w bajtach
+                int img2Stride = ((int)Math.Round(img2.Width) * 4) + img2LinePadding;
 
-                int img1ArraySize = img1Stride * (int)img1.Height;       // rozmiar tablicy pikseli (ilosc_bajtow_w_wierszu * liczba_wierszy)
-                int img2ArraySize = img2Stride * (int)img2.Height; 
+                int img1ArraySize = img1Stride * (int)Math.Round(img1.Height);       // rozmiar tablicy pikseli (ilosc_bajtow_w_wierszu * liczba_wierszy)
+                int img2ArraySize = img2Stride * (int)Math.Round(img2.Height); 
 
                 byte[] img1Pixels = new byte[img1ArraySize];            // tablice pikseli
                 byte[] img2Pixels = new byte[img2ArraySize];  
@@ -94,13 +97,12 @@
                 #endregion
 
                 #region Main Algorithm 
-                
-
-        
-
+                /**
+                 * Realizacja ważonego dodawania obrazu przy zastosowaniu wzoru postaci
+                 * Image(x,y) = W*Image1(x,y) +(1-W)*Image2(x,y), gdzie 0 ≤ W ≤ 1 
+                 */
                 for (int i = 0, j = 0; i < img1Pixels.Length / 4; ++i)
                 {
-
                     img1Pixels[j] = (byte)((alphaSrc * (float)img1Pixels[j]) +
                                     (alphaDst * (float)img2Pixels[j]));
                     ++j;
@@ -112,8 +114,6 @@
                     ++j;
                     img1Pixels[j] = 255;
                     ++j;
-                  
-
                 }
 
                 #endregion
@@ -123,17 +123,9 @@
                 #region Save Result Bitmap
                 Int32Rect rect = new Int32Rect(0, 0, (int)img1.Width, (int)img1.Height);
                 img1Bitmap.WritePixels(rect, img1Pixels, img1Stride, 0);
-
+                
                 SaveDialog(img1Bitmap);
-                #endregion
-
-            }
-            catch (UriFormatException ex)
-            {
-
-               // ErrLabel.Content = ex.Message;
-            }
-          
+                #endregion          
         }
         #endregion
        

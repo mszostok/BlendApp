@@ -3,13 +3,24 @@
     using System;
     using System.ComponentModel;
 
+    /**
+     * Obiekt tej klasy przechowuje wszystkie ustawienia aplikacji, dzięki implenetacji
+     * INotifyPropertyChanged umożliwia uaktualnianie tych właściwości na bieżąco. 
+     * Natomiast implementacja IDataErrorInfo pozwala na prostą walidację danych - jeśli
+     * użytkownik nie wprowadzi ścieżek dostępu do plików graficznyc przycisk "Połącz" 
+     * będzie zablokowany. Należy mieć na uwadzę, iż ścieżki te nie muszą być poprawne -
+     * tym czy są zajmuj się klasa BlendImagesSystem. Reszty właściwosci nie trzeba sprawdzać
+     * gdyż posiadają wartości domyślne.
+     */ 
     public class AppSettings : INotifyPropertyChanged, IDataErrorInfo
     {
 
+        #region Constructors
         public AppSettings()
         {
-            ThreadNumberRecommended = "Rekomendowana liczba wątków : " + CheckNumberOfLogicalProcessor().ToString();  
+            ThreadNumberRecommended = "Rekomendowana liczba wątków : " + NumberOfFreeLogicalProcessor().ToString();  
         }
+        #endregion
 
         #region ThreadNumberRecomended
         // Liczba rekomendowanej liczby wątków - domyślnie (liczba_wątków_procesora - 1)
@@ -18,7 +29,8 @@
         #endregion
 
         #region ThreadCount
-        private int threadNumber = CheckNumberOfLogicalProcessor();   // Liczba wątków ustalona przez użytkownika - domyślnie liczba (logicznych_procesorów -1)
+        // Liczba wątków ustalona przez użytkownika - domyślnie jest liczbą rekomendowaną
+        private int threadNumber = NumberOfFreeLogicalProcessor();   
         public int ThreadNumber
         {
             get
@@ -104,6 +116,7 @@
         #endregion
 
         #region Result Image
+        //Przechowuje scieżke dostępu do wynikowego pliku graficznego
         private string resultImage;
         public string ResultImage     
         {                             
@@ -122,6 +135,14 @@
 
             }
 
+        }
+        #endregion
+
+        #region Functions
+        //zwraca liczbę wolnych procesorów logicznych
+        private static int NumberOfFreeLogicalProcessor()
+        {
+            return Environment.ProcessorCount-1;
         }
         #endregion
 
@@ -151,18 +172,11 @@
                     case "Img2Path": Error = String.IsNullOrWhiteSpace(Img2Path) ? "Err Path" : null;
                         break;
                 }
-                
-                
+
+
                 return Error;
             }
 
-        }
-        #endregion
-
-        #region Functions
-        private static int CheckNumberOfLogicalProcessor()
-        {
-            return Environment.ProcessorCount-1;
         }
         #endregion
     }

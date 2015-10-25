@@ -4,39 +4,21 @@
     using System.Windows.Input;
     using BlendApp.ViewModels;
 
-    class BlendAppSettingsCommand : ICommand
+    class BlendAppSettingsCommand : BaseCommand
     {
-        #region Members
-        private MainWindowViewModel viewModel;
-        #endregion
 
         #region Constructors
-        public BlendAppSettingsCommand(MainWindowViewModel view)
-        {
-            viewModel = view;
-        }
+        public BlendAppSettingsCommand(MainWindowViewModel view) : base(view) { }
         #endregion
 
-        #region ICommand Members
-        public event System.EventHandler CanExecuteChanged
+        #region ICommand Members  
+        public override bool CanExecute(object parameter)
         {
-            add
-            {
-                CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-                CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        public bool CanExecute(object parameter)
-        {
+            //jeśli jest jakiś bład należy zablokować przycisk
             return String.IsNullOrWhiteSpace(viewModel.AppSettings.Error);
         }
 
-
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             viewModel.BlendImages();
         }

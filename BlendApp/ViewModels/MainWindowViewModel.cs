@@ -55,6 +55,7 @@ namespace BlendApp.ViewModels
         #endregion
 
         #region Functions
+        // Wyświetlenie dialogu do otwarcie bitmapy
         private string OpenDialog()
         {
             // Utworzenie dialogu do wyboru katalogu
@@ -75,33 +76,56 @@ namespace BlendApp.ViewModels
             return "";
         }
 
+        private void Img1Select()
+        {
+            AppSettings.Img1Path = OpenDialog();
+        }
+
+        private void Img2Select()
+        {
+            AppSettings.Img2Path = OpenDialog();
+        }
+
+        // Wyświetlenie 'okna wynikowego' poprzez zwinięcie expandera
         private void ShowResult()
         {
             window.IsExpanded = false;
         }
 
+        public void OpenDialogForImage(string param)
+        {
+            switch (param)
+            {
+                case "Img1": Img1Select();
+                    break;
+                case "Img2": Img2Select();
+                    break;
+            }
+        }
+
+        /**
+         * Realizowanie nałożenia dwóch obrazow poprzez utworzenie obiektu będącego
+         * sytemem który udostępnia taką funkcjonalnosć
+         */
         public void BlendImages()
         {
-            //BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings); - tu jakiś catch
-            //viewModel.ShowResult(); jak wyszystko ok to zmieniamy na result
-
             BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings);
-            blendSystem.BlendImages();
-            ShowResult();
-            //Debug.Assert(false, String.Format("Liczba watkow: {0} ", 1);
+
+            try
+            {
+                blendSystem.BlendImages();
+                ShowResult();
+            }
+            catch (UriFormatException)
+            {
+                Debug.Assert(false, "Brak poprawnych ścieżek!");                
+            }
+            catch (Exception ex)
+            {
+                Debug.Assert(false, String.Format("Bład : {0}", ex.Message));
+            }
 
         }
-
-        public void Img1Select()
-        {
-            AppSettings.Img1Path = OpenDialog();
-        }
-
-        public void Img2Select()
-        {
-            AppSettings.Img2Path = OpenDialog();
-        }
-
         #endregion
 
         #region Commands
