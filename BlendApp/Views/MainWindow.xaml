@@ -1,7 +1,7 @@
 ﻿<Window x:Class="BlendApp.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Height="430" Width="600" MinHeight="430" MinWidth="600"
+        Height="470" Width="600" MinHeight="470" MinWidth="600"
 	Title="Property">
     <Window.Resources>
         <!-- Animated Expander Button's Template-->
@@ -97,54 +97,54 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-        
+
         <!-- Stretch Out Content Expander's Template,
         Uses: AnimatedExpanderButtonTemp from above-->
-    <ControlTemplate x:Key="StretchyExpanderTemp" TargetType="{x:Type Expander}">
-        <DockPanel>
-            <ToggleButton x:Name="ExpanderButton" 
+        <ControlTemplate x:Key="StretchyExpanderTemp" TargetType="{x:Type Expander}">
+            <DockPanel>
+                <ToggleButton x:Name="ExpanderButton" 
                               DockPanel.Dock="Top"
                               Template="{StaticResource AnimatedExpanderButtonTemp}"
                               Content="{TemplateBinding Header}"
                               IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                               OverridesDefaultStyle="True"
                               Padding="1.5,0">
-            </ToggleButton>
-            <ContentPresenter x:Name="ExpanderContent"
+                </ToggleButton>
+                <ContentPresenter x:Name="ExpanderContent"
                                   ContentSource="Content"
                                   DockPanel.Dock="Bottom"
                                   >
-                <ContentPresenter.LayoutTransform>
-                    <ScaleTransform ScaleY="0"/>
-                </ContentPresenter.LayoutTransform>
-            </ContentPresenter>
-        </DockPanel>
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsExpanded" Value="True">
-                <Trigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="ExpanderContent"
+                    <ContentPresenter.LayoutTransform>
+                        <ScaleTransform ScaleY="0"/>
+                    </ContentPresenter.LayoutTransform>
+                </ContentPresenter>
+            </DockPanel>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsExpanded" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="ExpanderContent"
                                                  Storyboard.TargetProperty="(ContentPresenter.LayoutTransform).(ScaleTransform.ScaleY)"                                                 
                                                  To="1"
                                                  Duration="0:0:0.4"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </Trigger.EnterActions>
-                <Trigger.ExitActions>
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="ExpanderContent"
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="ExpanderContent"
                                                  Storyboard.TargetProperty="(ContentPresenter.LayoutTransform).(ScaleTransform.ScaleY)"
                                                  To="0"
                                                  Duration="0:0:0.4"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </Trigger.ExitActions>
-            </Trigger>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
 
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Window.Resources>
 
     <Grid Background="White">
@@ -164,14 +164,15 @@
             <Label HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0,0,0,-2" 
                    Foreground="White" Content="Czas wykoniania: xxx ms" />
         </Grid>
-
-        <Expander Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True"
-                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" ExpandDirection="Right"
+        <!-- Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True" -->
+        <Expander 
+                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" 
                   IsExpanded="{Binding Window.IsExpanded, UpdateSourceTrigger=PropertyChanged}">
-            
+
             <!-- Ciało expandera  - ustawienia -->
             <Grid Background="#FF1B1B1C" Margin="0,0,0,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="50*"/>
                     <RowDefinition Height="50*"/>
                     <RowDefinition Height="50*"/>
                     <RowDefinition Height="200*"/>
@@ -180,11 +181,11 @@
                 <!-- Wybór liczby wątków -->
                 <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,-10,0,0"
                    Foreground="White" Content="Liczba wątków w programie " />
-                <TextBox Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="180,-5,0,0" Width="20"
+                <TextBox Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="180,-5,0,0" Width="20" MaxLength="2"
                     Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" />
                 <Slider Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="290,-5,10,0" Minimum="1" Maximum="64" TickPlacement="TopLeft"
                         Cursor="Hand" TickFrequency="1" IsSnapToTickEnabled="True" ToolTip="Zmiana liczby wątków"  Name="slValue" 
-                        Value="{Binding AppSettings.ThreadNumber, UpdateSourceTrigger=PropertyChanged}" />
+                        Value="{Binding AppSettings.ThreadNumber, UpdateSourceTrigger=PropertyChanged}" Foreground="White" />
 
                 <!-- Rekomendowa liczba dostępnych wątków -->
                 <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="270,10,0,0" Foreground="White"
@@ -193,14 +194,24 @@
 
                 <!-- Wybór biblioteki -->
                 <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0"
-                   Foreground="White" Content="Wybór biblioteki" />
+                   Foreground="White" Content="Wybór algorytmu" />
                 <RadioButton Grid.Row="1" GroupName="DLL" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="290,10,0,0" 
-                         IsChecked="True" Foreground="White" Content="DLL - C#" />
+                         IsChecked="True" Foreground="White" Content="Biblioteka - C#" />
                 <RadioButton Grid.Row="1" GroupName="DLL" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="290,30,0,0"
-                         Foreground="White" Content="DLL - ASM" IsChecked="{Binding AppSettings.LoadAsmLibrary, UpdateSourceTrigger=PropertyChanged}"/>
+                         Foreground="White" Content="Biblioteka - ASM" IsChecked="{Binding AppSettings.LoadAsmLibrary, UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0"
+                   Foreground="White" Content="Kanał alpha" />
+                <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="290,5,0,0" TextWrapping="WrapWithOverflow"  Foreground="White" 
+                           Text="0 &lt;" />
+                <TextBox Grid.Row="2"  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="315,7,0,0" Height="20" Width="35" MaxLength="3"
+                         Text="{Binding AppSettings.Alpha, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="350,5,0,0" Foreground="White" 
+                           Text=" &lt; 255" />
 
                 <!-- Wybór obrazów -->
-                <GroupBox Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,20,20"
+                <GroupBox Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,20,20"
                       Foreground="White" Header="Wybierz obrazy" BorderBrush="White" BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -210,11 +221,11 @@
                         </Grid.RowDefinitions>
                         <!-- Obraz 1 -->
                         <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Margin="10,15,0,0" Content="Obraz 1 " />
-                        <TextBox Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,20,0,0" Width="200" Height="20"
+                        <TextBox  Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,20,0,0" Width="200" Height="20"
                              Name="img1TxtBox"  Text="{Binding AppSettings.Img1Path, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                         <Button Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="270,20,0,0" Width="20" Height="20"
                                 Name="BtnImg1" Content="..." CommandParameter="Img1"
-                                Command="{Binding ImgSelectCommand}"/>
+                                Command="{Binding ImgSelectCommand}" Background="White" BorderBrush="#FF4431FF"/>
 
                         <!-- Obraz 2 -->
                         <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Margin="10,15,0,0" Content="Obraz 2 " />
@@ -222,18 +233,21 @@
                              Name="img2TxtBox" Text="{Binding AppSettings.Img2Path, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
                         <Button Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="270,20,0,0" Width="20" Height="20"
                              Name="BtnImg2" Content="..." CommandParameter="Img2"
-                                Command="{Binding ImgSelectCommand}"/>
+                                Command="{Binding ImgSelectCommand}" Background="White"/>
 
                         <!-- Połącz -->
                         <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Height="30" Width="80" 
-                        Command="{Binding  BlendImagesCommand}" Content="Połącz" ToolTip="Nałożenie obrazów" BorderBrush="Black"  />
+                        Command="{Binding  BlendImagesCommand}" Content="Połącz" ToolTip="Nałożenie obrazów" BorderBrush="Black" Background="White"  />
                     </Grid>
                 </GroupBox>
+
+
+
 
             </Grid>
         </Expander>
 
 
     </Grid>
-    
+
 </Window>

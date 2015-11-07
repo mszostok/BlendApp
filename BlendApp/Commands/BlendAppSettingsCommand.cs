@@ -4,7 +4,7 @@
     using System.Windows.Input;
     using BlendApp.ViewModels;
 
-    class BlendAppSettingsCommand : BaseCommand
+    public class BlendAppSettingsCommand : BaseCommand
     {
 
         #region Constructors

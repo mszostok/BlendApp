@@ -4,7 +4,7 @@
     using System;
     using System.Windows.Input;
 
-    class ImgSelectAppSettingsCommand : BaseCommand
+    public class ImgSelectAppSettingsCommand : BaseCommand
     {
 
         #region Constructors

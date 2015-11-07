@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace BlendApp.Models
 {
-    class WindowData : INotifyPropertyChanged
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
+
+    public class WindowData : INotifyPropertyChanged
     {
         #region Title
-        private string title;   // Liczba wątków ustalona przez użytkownika - domyślnie 1
+        private string title;   
         
         public string Title
         {

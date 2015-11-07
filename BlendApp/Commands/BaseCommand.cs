@@ -3,16 +3,16 @@
     using BlendApp.ViewModels;
     using System.Windows.Input;
 
-    class BaseCommand : ICommand
+    public abstract class BaseCommand : ICommand
     {
         #region Members
         protected MainWindowViewModel viewModel;
         #endregion
 
         #region Constructors
-        public BaseCommand(MainWindowViewModel view)
+        protected BaseCommand(MainWindowViewModel view)
         {
-            viewModel = view;
+            this.viewModel = view;
         }
         #endregion
 
@@ -34,10 +34,7 @@
             return true;
         }
 
-        public virtual void Execute(object parameter)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void Execute(object parameter);
         #endregion
 
     }

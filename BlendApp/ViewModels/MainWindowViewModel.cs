@@ -5,10 +5,12 @@ namespace BlendApp.ViewModels
     using BlendApp.Models;
     using System;
     using System.Diagnostics;
+    using System.IO;
+    using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
 
-    class MainWindowViewModel
+    public class MainWindowViewModel
     {
         #region Members
         private AppSettings appSettings;
@@ -58,6 +60,7 @@ namespace BlendApp.ViewModels
         // Wyświetlenie dialogu do otwarcie bitmapy
         private string OpenDialog()
         {
+            
             // Utworzenie dialogu do wyboru katalogu
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
@@ -109,6 +112,7 @@ namespace BlendApp.ViewModels
          */
         public void BlendImages()
         {
+            appSettings.ResultImage = "";
             BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings);
 
             try
@@ -118,12 +122,21 @@ namespace BlendApp.ViewModels
             }
             catch (UriFormatException)
             {
-                Debug.Assert(false, "Brak poprawnych ścieżek!");                
+                MessageBox.Show("Brak poprawnych ścieżek!", "Bład");                
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Proszę zapisać plik pod inną nazwą.", "Bład");
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("DPI obrazów musi być równe 96.", "Bład");
             }
             catch (Exception ex)
             {
-                Debug.Assert(false, String.Format("Bład : {0}", ex.Message));
+                MessageBox.Show(String.Format("Bład : {0}", ex.Message), "Bład");
             }
+
 
         }
         #endregion

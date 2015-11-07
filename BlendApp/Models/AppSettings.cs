@@ -22,6 +22,26 @@
         }
         #endregion
 
+        #region Alpha
+        // wartość przeźroczystości
+        private int alpha = 155;
+        public int Alpha
+        {
+            get
+            {
+                return alpha;
+            }
+            set
+            {
+                if (alpha != value)
+                {
+                    alpha = value;
+                    RaisePropertyChanged("Alpha");
+                }
+            }
+        }
+        #endregion
+
         #region ThreadNumberRecomended
         // Liczba rekomendowanej liczby wątków - domyślnie (liczba_wątków_procesora - 1)
         // (minus jeden bo program główny to pierwszy wątek) 
@@ -80,7 +100,7 @@
         #endregion
 
         #region Images paths Img1Path Img2Path
-        string img1Path;
+        string img1Path = "C:\\Users\\indianer\\Pictures\\blendApp\\czerw.bmp";
         public string Img1Path
         {
             get
@@ -97,7 +117,7 @@
             }
         }
 
-        string img2Path;
+        string img2Path = "C:\\Users\\indianer\\Pictures\\blendApp\\ziel.bmp";
         public string Img2Path
         {
             get
