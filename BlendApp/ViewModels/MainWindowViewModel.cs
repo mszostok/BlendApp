@@ -1,5 +1,4 @@
-﻿
-namespace BlendApp.ViewModels
+﻿namespace BlendApp.ViewModels
 {
     using BlendApp.Commands;
     using BlendApp.Models;
@@ -12,16 +11,13 @@ namespace BlendApp.ViewModels
 
     public class MainWindowViewModel
     {
-        #region Members
-        private AppSettings appSettings;
-        private WindowData window;
-        #endregion
+
 
         #region Constructors
         public MainWindowViewModel()
         {
-            appSettings = new AppSettings();
-            window = new WindowData();
+            AppSettings = new AppSettings();
+            Window = new WindowData();
             BlendImagesCommand = new BlendAppSettingsCommand(this);
             ImgSelectCommand = new ImgSelectAppSettingsCommand(this);
 
@@ -29,35 +25,20 @@ namespace BlendApp.ViewModels
         #endregion
 
         #region Properties
-        public bool CanBlend
-        {
-            get
-            {
-                return true;
-            }
-        }
-        
+        // przechowyanie ustawień użytkownika
+        public AppSettings AppSettings { get; set; }
 
-        public AppSettings AppSettings
-        {
-            get
-            {
-                return appSettings;
-            }
-        }
-
-        public WindowData Window
-        {
-            get
-            {
-                return window;
-            }
-        }
+        // ustawienia wyświetlanego okna
+        public WindowData Window {get; set;}
 
         #endregion
 
         #region Functions
-        // Wyświetlenie dialogu do otwarcie bitmapy
+
+        /// <summary>
+        /// Wyświetlenie dialogu do otwarcie bitmapy
+        /// </summary>
+        /// <returns>zwraca ścieżkę do pliku graficznego.</returns>
         private string OpenDialog()
         {
             
@@ -79,22 +60,34 @@ namespace BlendApp.ViewModels
             return "";
         }
 
+        /// <summary>
+        /// Pobranie ścieżki do pierwszego obrazu.
+        /// </summary>
         private void Img1Select()
         {
             AppSettings.Img1Path = OpenDialog();
         }
 
+        /// <summary>
+        /// Pobranie ścieżki do drugiego obrazu.
+        /// </summary>
         private void Img2Select()
         {
             AppSettings.Img2Path = OpenDialog();
         }
 
-        // Wyświetlenie 'okna wynikowego' poprzez zwinięcie expandera
+        /// <summary>
+        /// Wyświetlenie 'okna wynikowego' poprzez zwinięcie expandera.
+        /// </summary>
         private void ShowResult()
         {
-            window.IsExpanded = false;
+            Window.IsExpanded = false;
         }
 
+        /// <summary>
+        /// Stworzenie dialogu dla danego obrazu.
+        /// </summary>
+        /// <param name="param">identyfikator wywołującego metodę.</param>
         public void OpenDialogForImage(string param)
         {
             switch (param)
@@ -106,14 +99,14 @@ namespace BlendApp.ViewModels
             }
         }
 
-        /**
-         * Realizowanie nałożenia dwóch obrazow poprzez utworzenie obiektu będącego
-         * sytemem który udostępnia taką funkcjonalnosć
-         */
+        /// <summary>
+        /// Realizowanie nałożenia dwóch obrazow poprzez utworzenie obiektu będącego 
+        /// systemem który udostępnia taką funkcjonalność.
+        /// </summary>
         public void BlendImages()
         {
-            appSettings.ResultImage = "";
-            BlendImagesSystem blendSystem = new BlendImagesSystem(appSettings);
+            AppSettings.ResultImage = "";
+            BlendImagesSystem blendSystem = new BlendImagesSystem(AppSettings);
 
             try
             {
