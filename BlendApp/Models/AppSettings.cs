@@ -158,6 +158,29 @@
         }
         #endregion
 
+        #region Result Image
+        //czas nałożenia obrazów
+        private string resultTime = "";
+        public string ResultTime
+        {
+            get
+            {
+
+                return resultTime;
+            }
+            set
+            {
+                if (resultTime != value)
+                {
+                    resultTime = value;
+                    RaisePropertyChanged("ResultTime");
+                }
+
+            }
+
+        }
+        #endregion
+
         #region Functions
         //zwraca liczbę wolnych procesorów logicznych
         private static int NumberOfFreeLogicalProcessor()

@@ -8,32 +8,43 @@
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
-
+    /// <summary>
+    /// Obiekt tej klasy odpowiedzialny jest zarówno za wczytanie jak i nałożenie
+    /// dwóch obrazów uwzględniając wagę dla obrazu nakładanego.
+    /// </summary>
     public class BlendImagesSystem
     {
-        //[DllImport("BlendAlgorithm.dll")]
-        //public static extern void blendToImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop);
+        [DllImport("BlendAlgorithm.dll")]
+        public static extern void blendToImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop);
 
 
         #region Members
-        private AppSettings appSettings;
+        private AppSettings appSettings;    // referencja do obiektu przechowujacego ustawienia użytkownika
 
-        private int maxWidth;
-        private int maxHeight;
-        private int threadPixelsStep;
-        private byte[] img1Pixels;
+        private int maxWidth;            // maksymalna szerokość pliku graficznego
+        private int maxHeight;          // maksymalna wysokość pliku graficznego
+
+        private int threadPixelsStep;  // ilość pikseli przypadająca na jeden wątek
+
+        private byte[] img1Pixels;    // tablica pikseli na której wykonywane 
         private byte[] img2Pixels;
 
-        private List<Thread> threadList;
-        private List<BitmapImage> bmpList;
-        private List<BitmapImage> croppedBmpList;
+        private List<Thread> threadList;            // lista utworzonych wątków podczas wykonywania obliczeń
+        private List<BitmapImage> bmpList;         // lista wczytanych plików graficznych podanych przez użytkownika
+        private List<BitmapImage> croppedBmpList; // lista plików graficznych o tych samych rozmiarach
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="initialData"> referencja do aktualnego obiektuz ustawieniami </param>
         public BlendImagesSystem(AppSettings initialData)
         {
             appSettings = initialData;
+
             threadList = new List<Thread>();
             bmpList = new List<BitmapImage>();
             croppedBmpList = new List<BitmapImage>();
@@ -42,15 +53,13 @@
         }
         #endregion
 
-        #region Properties
-
-        #endregion
-
         #region Functions
-        /**
-         * Wyświetlenie dialogu do zapisu bitmapy będącej wynikiem nałożenia
-         * przekazanych obrazów.
-         */
+
+        /// <summary>
+        /// Wyświetlenie dialogu do zapisu bitmpay będącej wynikiem nałożenia
+        /// przekazanych obrazów.
+        /// </summary>
+        /// <param name="resultBitmap">bitmapa która ma zostać zapisana</param>
         private void SaveDialog(WriteableBitmap resultBitmap)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -69,6 +78,25 @@
             }
         }
 
+        /// <summary>
+        /// Załadowanie obrazu podanych przez użytkownika
+        /// </summary>
+        private void LoadImagesFromUserPaths()
+        {
+            /*
+             * Jesli w przyszłości od użytkownika będzie pobierane więcej ścieżek
+             * w postaci kolekcji, to wtedy będzie można je ładować w prosty sposób
+             * poprzez pętle foreach
+             */
+            bmpList.Add(new BitmapImage(new Uri(appSettings.Img1Path)));
+            bmpList.Add(new BitmapImage(new Uri(appSettings.Img2Path)));
+        }
+
+        /// <summary>
+        /// Ustalenia maksymalnej wielkości tablicy poprzez
+        /// sprawdzenie znalezienie bitmapy onamniejszej 
+        /// szerokości oraz wysokości.
+        /// </summary>
         private void SetMaxArraySize()
         {
 
@@ -79,6 +107,9 @@
             }
         }
 
+        /// <summary>
+        /// Przycięcie wszystkich bitmap do tej samej wielkości
+        /// </summary>
         private void CropAllImagesToMaxArraySize()
         {
             foreach (BitmapImage bmp in bmpList)
@@ -102,17 +133,13 @@
             }
         }
 
-        private void LoadImagesFromUserPaths()
-        {
-            /*
-             * Jesli w przyszłości od użytkownika będzie pobierane więcej ścieżek
-             * w postaci kolekcji, to wtedy będzie można je ładować w prosty sposób
-             * poprzez pętle foreach
-             */
-            bmpList.Add(new BitmapImage(new Uri(appSettings.Img1Path)));
-            bmpList.Add(new BitmapImage(new Uri(appSettings.Img2Path)));
-        }
-
+        /// <summary>
+        /// Utworzenie nowego wątku nakładającego obrazy.
+        /// </summary>
+        /// <param name="start">definiuje indeks początkowy od którego 
+        /// wątek będzie wykoywał obliczenia</param>
+        /// <param name="stop">
+        /// definiuje ineks końcowy na którym wątek zatrzyma obliczenia</param>
         private void createNewThread(int start, int stop)
         {
             if (appSettings.LoadAsmLibrary == true)
@@ -123,13 +150,16 @@
             {
                 var t = new Thread(() =>
                 BlendAlgorithm.BlendImage.blendToImages(img1Pixels, img2Pixels, appSettings.Alpha, start, stop));
-                t.Start();
                 threadList.Add(t);
-                Thread.Sleep(5); // ustabilizowanie wątku, jeśli nie odczekamy czasu granicznego to pobierze on złe dane.
             }
            
         }
 
+        /// <summary>
+        /// Utorzenie listy wątków które odpowiedzialne są za nałożenie 
+        /// obrazów na siebie.
+        /// </summary>
+        /// <param name="threadNumber">ilość wątków jaka ma zostać utworzona.</param>
         private void createThreadList(int threadNumber)
         {
             int start = 0;
@@ -144,8 +174,9 @@
 
             }
         }
+
         /// <summary>
-        /// Główna funkcja realizująca ważone nakładanie obrazów.
+        /// Metoda typu Coarse-grained, realizująca ważone nakładanie obrazów.
         /// </summary>
         public unsafe void BlendImages()
         {
@@ -210,11 +241,25 @@
                 createThreadList(appSettings.ThreadNumber);
             }
 
+            Stopwatch clock = new Stopwatch();
+            clock.Start();
+
+            //uruchomienie wszystkich wątków
+            foreach (Thread th in threadList)
+            {
+                th.Start();
+            }
+
+
             //oczekiwanie na zakończenie obliczeń przez wszystkie wątki
             foreach (Thread th in threadList)
             {
                 th.Join();
             }
+
+
+            clock.Stop();
+            appSettings.ResultTime = "Czas wykonania " + clock.ElapsedMilliseconds.ToString() + " ms.";
 
             #endregion
 

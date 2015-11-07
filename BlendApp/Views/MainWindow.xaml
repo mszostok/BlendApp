@@ -162,10 +162,10 @@
             <!-- Podgląd wynik, domyślnie przesłonięte przez expander -->
             <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,20"  Source="{Binding AppSettings.ResultImage}"/>
             <Label HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0,0,0,-2" 
-                   Foreground="White" Content="Czas wykoniania: xxx ms" />
+                   Foreground="White" Content="{Binding AppSettings.ResultTime}" />
         </Grid>
-        <!-- Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True" -->
-        <Expander 
+        <!--  -->
+        <Expander Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True"
                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" 
                   IsExpanded="{Binding Window.IsExpanded, UpdateSourceTrigger=PropertyChanged}">
 
