@@ -14,11 +14,13 @@
     /// Obiekt tej klasy odpowiedzialny jest zarówno za wczytanie jak i nałożenie
     /// dwóch obrazów uwzględniając wagę dla obrazu nakładanego.
     /// </summary>
-    public class BlendImagesSystem
+    public unsafe class BlendImagesSystem
     {
         [DllImport("BlendAlgorithm.dll")]
         public static extern void blendToImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop);
 
+        [DllImport("BlendAlgorithmASM.dll")]
+        public static unsafe extern int blendTwoImages(int** bitmaps, int alpha);
 
         #region Members
         private AppSettings appSettings;    // referencja do obiektu przechowujacego ustawienia użytkownika
@@ -28,8 +30,13 @@
 
         private int threadPixelsStep;  // ilość pikseli przypadająca na jeden wątek
 
-        private byte[] img1Pixels;    // tablica pikseli na której wykonywane 
-        private byte[] img2Pixels;
+        private byte[] img1PixelsByte;    // tablica pikseli na której wykonywane 
+        private byte[] img2PixelsByte;
+
+        private int[] img1PixelsInt;    
+        private int[] img2PixelsInt;
+
+        private int** bitmapsList;
 
         private List<Thread> threadList;            // lista utworzonych wątków podczas wykonywania obliczeń
         private List<BitmapImage> bmpList;         // lista wczytanych plików graficznych podanych przez użytkownika
@@ -140,16 +147,16 @@
         /// wątek będzie wykoywał obliczenia</param>
         /// <param name="stop">
         /// definiuje ineks końcowy na którym wątek zatrzyma obliczenia</param>
-        private void createNewThread(int start, int stop)
+        private unsafe void createNewThread(int start, int stop)
         {
             if (appSettings.LoadAsmLibrary == true)
             {
-                return;
+                blendTwoImages(bitmapsList, (int)appSettings.Alpha);
             }
             else
             {
                 var t = new Thread(() =>
-                BlendAlgorithm.BlendImage.blendToImages(img1Pixels, img2Pixels, appSettings.Alpha, start, stop));
+                BlendAlgorithm.BlendImage.blendToImages(img1PixelsByte, img2PixelsByte, appSettings.Alpha, start, stop));
                 threadList.Add(t);
             }
            
@@ -205,12 +212,17 @@
 
             int arraySize = stride * (int)Math.Round(croppedBmpList[0].Height);       // rozmiar tablicy pikseli (ilosc_bajtow_w_wierszu * liczba_wierszy)
 
-            img1Pixels = new byte[arraySize];            // tablice pikseli
-            img2Pixels = new byte[arraySize];
+            img1PixelsByte = new byte[arraySize];            // tablice pikseli
+            img2PixelsByte = new byte[arraySize];
        
-            img1Bitmap.CopyPixels(img1Pixels, stride, 0);  // kopiowanie tablicy pikseli z bitmapy do tablicy bajtów, z ustalonym krokiem, zaczynając od 0
-            img2Bitmap.CopyPixels(img2Pixels, stride, 0);
+            img1Bitmap.CopyPixels(img1PixelsByte, stride, 0);  // kopiowanie tablicy pikseli z bitmapy do tablicy bajtów, z ustalonym krokiem, zaczynając od 0
+            img2Bitmap.CopyPixels(img2PixelsByte, stride, 0);
             #endregion
+
+            if (appSettings.LoadAsmLibrary == true)
+            {
+                bitmapsList = createIntArrayFromByte();
+            }
 
             #region Main Algorithm
 
@@ -265,11 +277,51 @@
 
             #region Save Result Bitmap
 
+            if (appSettings.LoadAsmLibrary == true)
+            {
+                copyAsmResultToImg1PixelsByte();
+            }
             Int32Rect rect = new Int32Rect(0, 0, maxWidth, maxHeight);
-            img1Bitmap.WritePixels(rect, img1Pixels, stride, 0); // zapisanie wyniku obliczeń do bitmapy
+            img1Bitmap.WritePixels(rect, img1PixelsByte, stride, 0); // zapisanie wyniku obliczeń do bitmapy
 
             SaveDialog(img1Bitmap); //zapisanie bitmapy na dysku
             #endregion
+        }
+
+        private unsafe int** createIntArrayFromByte()
+        {
+            img1PixelsInt = new int[img1PixelsByte.Length];
+            img2PixelsInt = new int[img2PixelsByte.Length];
+
+            for (int i = 0; i < img1PixelsByte.Length; ++i)
+            {
+                img1PixelsInt[i] = img1PixelsByte[i];
+                img2PixelsInt[i] = img2PixelsByte[i];
+            }
+
+            fixed (int* img1Ptr = &img1PixelsInt[0], img2Ptr = &img2PixelsInt[0])
+            {
+                int*[] PtrArray = new int*[2];
+
+                PtrArray[0] = img1Ptr;
+                PtrArray[1] = img2Ptr;
+
+
+                fixed (int** bitmaps = &PtrArray[0])
+                {
+                    return bitmaps;
+                }
+               
+
+            }
+        }
+
+        private unsafe void copyAsmResultToImg1PixelsByte()
+        {
+            for (int i = 0; i < img1PixelsByte.Length; ++i)
+            {
+                img1PixelsByte[i] = (byte)img1PixelsInt[i];
+            }
         }
         #endregion
       

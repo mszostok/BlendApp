@@ -1,4 +1,4 @@
 ;------------
 LIBRARY BlendAlgorithmASM
-EXPORTS
+EXPORTS blendTwoImages
 ;-----------
