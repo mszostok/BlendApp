@@ -17,10 +17,10 @@
     public unsafe class BlendImagesSystem
     {
         [DllImport("BlendAlgorithm.dll")]
-        public static extern void blendToImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop);
+        public static extern void blendToImages(byte[][] bitmaps, int[] coords, int alpha);
 
         [DllImport("BlendAlgorithmASM.dll")]
-        public static unsafe extern int blendTwoImages(int** bitmaps, int alpha);
+        public static unsafe extern int blendTwoImages(int** bitmaps, int* coords, int alpha);
 
         #region Members
         private AppSettings appSettings;    // referencja do obiektu przechowujacego ustawienia użytkownika
@@ -36,7 +36,8 @@
         private int[] img1PixelsInt;    
         private int[] img2PixelsInt;
 
-        private int** bitmapsList;
+        private int** intBitmapsList;
+        private byte[][] byteBitmapsList;
 
         private List<Thread> threadList;            // lista utworzonych wątków podczas wykonywania obliczeń
         private List<BitmapImage> bmpList;         // lista wczytanych plików graficznych podanych przez użytkownika
@@ -140,6 +141,15 @@
             }
         }
 
+
+        private int*  convertCoords(int[] coords){
+            int[] coordsTmp = { coords[0], coords[1] };
+            fixed (int* coordsPtr = coordsTmp)
+            {
+                return coordsPtr;
+            }
+        }
+
         /// <summary>
         /// Utworzenie nowego wątku nakładającego obrazy.
         /// </summary>
@@ -147,16 +157,22 @@
         /// wątek będzie wykoywał obliczenia</param>
         /// <param name="stop">
         /// definiuje ineks końcowy na którym wątek zatrzyma obliczenia</param>
-        private unsafe void createNewThread(int start, int stop)
+        private unsafe void createNewThread(int[] coords)
         {
             if (appSettings.LoadAsmLibrary == true)
             {
-                blendTwoImages(bitmapsList, (int)appSettings.Alpha);
+                int* coordsPtr = convertCoords(coords);
+
+                   var t = new Thread(() =>
+                                blendTwoImages(intBitmapsList, coordsPtr, (int)appSettings.Alpha));
+                   threadList.Add(t);
             }
             else
             {
+                int[] coordsTmp = { coords[0], coords[1] };
+                
                 var t = new Thread(() =>
-                BlendAlgorithm.BlendImage.blendToImages(img1PixelsByte, img2PixelsByte, appSettings.Alpha, start, stop));
+                BlendAlgorithm.BlendImage.blendToImages(byteBitmapsList, coordsTmp, (int)appSettings.Alpha));
                 threadList.Add(t);
             }
            
@@ -169,15 +185,14 @@
         /// <param name="threadNumber">ilość wątków jaka ma zostać utworzona.</param>
         private void createThreadList(int threadNumber)
         {
-            int start = 0;
-            int stop =  threadPixelsStep;
+            int[] coords = { 0, threadPixelsStep };
 
             for (int i = 0; i < threadNumber; ++i)
             {
-                createNewThread(start, stop);
+                createNewThread(coords);
 
-                start +=  threadPixelsStep;
-                stop +=  threadPixelsStep;
+                coords[0] += threadPixelsStep;
+                coords[1] += threadPixelsStep;
 
             }
         }
@@ -219,11 +234,21 @@
             img2Bitmap.CopyPixels(img2PixelsByte, stride, 0);
             #endregion
 
-            if (appSettings.LoadAsmLibrary == true)
+            /*
+             * Jeśli będzie używany algortym z biblioteki ASM należy 
+             * utworzyć tablicę pikseli, w postaci wskaźników.
+             */
+            if (appSettings.LoadAsmLibrary == true) 
             {
-                bitmapsList = createIntArrayFromByte();
+                intBitmapsList = createIntArrayFromByte();
             }
+            else
+            {
+                byteBitmapsList = new byte[2][];
 
+                byteBitmapsList[0] = img1PixelsByte;
+                byteBitmapsList[1] = img2PixelsByte;
+            }
             #region Main Algorithm
 
             int bytesPerPixel =  img1Bitmap.Format.BitsPerPixel / 8;
@@ -244,8 +269,9 @@
 
                 createThreadList(appSettings.ThreadNumber-1);   // utworzenie n-1 wątków
 
-                int start = threadPixelsStep * (appSettings.ThreadNumber - 1); 
-                createNewThread( start, arraySize/ bytesPerPixel); // utworzenie n-tego wątku obliczającego pozostałe piksele
+                int start = threadPixelsStep * (appSettings.ThreadNumber - 1);
+                int[] coords = { start, arraySize / bytesPerPixel };
+                createNewThread(coords); // utworzenie n-tego wątku obliczającego pozostałe piksele
 
             }
             else
@@ -288,6 +314,11 @@
             #endregion
         }
 
+        /// <summary>
+        /// Metoda wykorzystywana do zainicjalizowania zmiennej <code>bitmapList</code>
+        /// która wykorzystywana jest przez algortym asemblera.
+        /// </summary>
+        /// <returns>Zwraca tablicę wskaźników na wskaźniki w stylu C/C++</returns>
         private unsafe int** createIntArrayFromByte()
         {
             img1PixelsInt = new int[img1PixelsByte.Length];
@@ -316,6 +347,10 @@
             }
         }
 
+        /// <summary>
+        /// Przekopiowanie obliczeń wykonanych przez bibliotekę asemblerową, 
+        /// do tablicy bajtów pixeli obrazu bazowego.
+        /// </summary>
         private unsafe void copyAsmResultToImg1PixelsByte()
         {
             for (int i = 0; i < img1PixelsByte.Length; ++i)
