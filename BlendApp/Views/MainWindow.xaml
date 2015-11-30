@@ -164,8 +164,8 @@
             <Label HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0,0,0,-2" 
                    Foreground="White" Content="{Binding AppSettings.ResultTime}" />
         </Grid>
-        <!--  -->
-        <Expander Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True"
+        <!-- Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True" -->
+        <Expander 
                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" 
                   IsExpanded="{Binding Window.IsExpanded, UpdateSourceTrigger=PropertyChanged}">
 
@@ -206,7 +206,7 @@
                 <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="290,5,0,0" TextWrapping="WrapWithOverflow"  Foreground="White" 
                            Text="0 &lt;" />
                 <TextBox Grid.Row="2"  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="315,7,0,0" Height="20" Width="35" MaxLength="3"
-                         Text="{Binding AppSettings.Alpha, UpdateSourceTrigger=PropertyChanged}"/>
+                         Text="{Binding AppSettings.Alpha, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                 <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="350,5,0,0" Foreground="White" 
                            Text=" &lt; 255" />
 

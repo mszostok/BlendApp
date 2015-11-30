@@ -214,6 +214,10 @@
                         break;
                     case "Img2Path": Error = String.IsNullOrWhiteSpace(Img2Path) ? "Err Path" : null;
                         break;
+                    case "Alpha":
+                        if (Alpha < 0 || Alpha > 255) { Error = "Wrong value"; }
+                        else { Error = null; }
+                        break;
                 }
 
 
