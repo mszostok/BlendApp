@@ -96,6 +96,16 @@
              * w postaci kolekcji, to wtedy będzie można je ładować w prosty sposób
              * poprzez pętle foreach
              */
+            if (File.Exists(appSettings.Img1Path) == false)
+            {
+                throw new UriFormatException("Wrong path1");
+            }
+            if (File.Exists(appSettings.Img2Path) == false)
+            {
+                throw new UriFormatException("Wrong path2");
+            }
+
+
             bmpList.Add(new BitmapImage(new Uri(appSettings.Img1Path)));
             bmpList.Add(new BitmapImage(new Uri(appSettings.Img2Path)));
         }

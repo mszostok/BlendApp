@@ -117,13 +117,13 @@
             {
                 MessageBox.Show("Brak poprawnych ścieżek!", "Bład");                
             }
-            catch (IOException)
-            {
-                MessageBox.Show("Proszę zapisać plik pod inną nazwą.", "Bład");
-            }
             catch (ArgumentOutOfRangeException)
             {
                 MessageBox.Show("DPI obrazów musi być równe 96.", "Bład");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Proszę zapisać plik pod inną nazwą.", "Bład");
             }
             catch (Exception ex)
             {

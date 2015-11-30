@@ -32,21 +32,25 @@ INCLUDE   c:\masm32\include\windows.inc
 ;******************************************************************************** 
 .data
 
-Pixel		STRUCT
-  b			DD	?
-  g			DD  ?
-  r			DD  ?
-  a			DD  ?
-Pixel		ENDS
+Pixel		STRUCT 4 ; definicja struktury przechowuj¹cej definicjê kolorów danego 
+					 ; piksela z offsetem ka¿dego elementu podzielnym przez 4 
+					 ; (wiêszka zajêtoœæ pamiêci ale szybsze dzia³anie)
+  b			DD	?	 ; 4 bajtowa zmienna oznaczaj¹ca kolor niebieski (blue)
+  g			DD  ?	 ; 4 bajtowa zmienna oznaczaj¹ca kolor zielony (greeen)
+  r			DD  ?	 ; 4 bajtowa zmienna oznaczaj¹ca kolor czerwony (red)
+  a			DD  ?	 ; 4 bajtowa zmienna oznaczaj¹ca kolor niebieski (blue)
+
+Pixel		ENDS	 ; koniec definicji strukury Pixel
 
 ;********************************************************************************
 ;    Segment deklaracji sta³ych
 ;********************************************************************************
 .const 
 
-maxAlpha DD 255
-numberOfIntegerInLoop DD 4
-bytesPerPixel DD 4
+maxAlpha DD 255	            ; sta³a oznaczaj¹ca maksymaln¹ wartoœæ przeŸroczystoœci
+							; jak¹ mo¿e wprowadziæ u¿ytkownik dla obrazu nak³adanego
+numberOfIntegerInLoop DD 4	; liczba edytowanych zmiennych w pêtli g³ownej blendLoop
+bytesPerPixel DD 4			; liczba bajtów z jakiej sk³ada siê pojedyñczy piksel
 
 ;********************************************************************************
 ;    Segment kodu
@@ -101,8 +105,8 @@ checkSSE2 ENDP
 ;*		obrazów bêdzie umieszczony w tablicy przekazanej jako obraz na
 ;*		który nale¿y na³o¿yæ drugi podany obraz.
 ;*		
-;*		Parametry: 
-;*			-bitmapList - dwuwymiarowa tablica typu int** gdzie, 
+;*		Wejœcie: 
+;*			-bitmaps - dwuwymiarowa tablica typu int** gdzie, 
 ;*							bitmapList[0] - obraz bazowy
 ;*							bitmapList[1] - obraz nak³adany
 ;*													 
@@ -113,7 +117,7 @@ checkSSE2 ENDP
 ;*										na tablicy bitmap. 
 ;*			-alpha - waga nak³adanego obrazu (przeŸroczystoœæ) w zakresie od 0 do 255. 										
 ;*
-;*		Zwraca informacje poprzez akumlator:
+;*		Wyjœcie:
 ;*		   -2 - zosta³y wykryte przek³amania w procedurze
 ;*		   -1 - rozkaz cpuid nie jest wspierany 
 ;*			0 - instrukcje SSE2 s¹ niedostêpne
@@ -124,14 +128,14 @@ checkSSE2 ENDP
 ;*		Wersja: 1.0
 ;********************************************************************************
 
-blendTwoImages PROC USES ebx edx ecx,
-					bitmaps: PTR PTR DWORD,
-					coords: PTR DWORD, 
-					alpha: DWORD
+blendTwoImages PROC USES ebx edx ecx,		; te rejestry bêd¹ wykorzystywane w procedurze (nast¹pi ich automatyczne od³o¿enie i przywrócenie)
+					bitmaps: PTR PTR DWORD,	; obrazy wejœciowe
+					coords: PTR DWORD,		; indeksy pocz¹tkowe i koñcowe
+					alpha: DWORD			; wartoœæ przeŸroczystoœci obrazu nak³adanego
 	;============================== ZMIENNE LOKALNE =============================
-	LOCAL	alphaBottom: DWORD, alphaTop: DWORD, 
-			start: DWORD, stop: DWORD,
-			rgba: Pixel 
+	LOCAL	alphaBottom: DWORD, alphaTop: DWORD, ; wartoœci przeŸroczystoœci kolejno dla obrazu bazowego oraz nak³adanego
+			start: DWORD, stop: DWORD,			 ; kolejno indeks pocz¹tkowy i koñcowy dla tablic pikseli
+			rgba: Pixel							 ; struktura przechowuj¹ca pojedyñczy piksel
 
 	;============================= OPERACJE WSTÊPNE =============================
 	call checkSSE2	; sprawdzenie dostêpnoœci instrukcji SSE2, informacja zwrócona do EAX
@@ -156,16 +160,16 @@ blendTwoImages PROC USES ebx edx ecx,
 	mov alphaBottom, eax			; za³adowanie wartoœci wagi drugiego obrazu
 	
 	MOVD	xmm5, alphaTop			; przepisanie wartoœci wagi obrazu nak³adanego do xmm5
-	shufps xmm5, xmm5, 0h			; powielenie jej na wszystkie 4 pola
+	SHUFPS xmm5, xmm5, 0h			; powielenie jej na wszystkie 4 pola
 	CVTDQ2PS xmm5, xmm5				; konwersja z double word na single-precision float
 
 	MOVD	xmm6, alphaBottom		; przepisanie wartoœci drugiej wagi do xmm5
-	shufps xmm6, xmm6, 0h			; powielenie jej na wszystkie 4 pola
+	SHUFPS xmm6, xmm6, 0h			; powielenie jej na wszystkie 4 pola
 	CVTDQ2PS xmm6, xmm6				; konwersja z double word na single-precision float
 									; poniewa¿ nie ma rozkazu dzielenia dla double word w SIMD
 
 	MOVD	xmm7, maxAlpha			; przepisanie wartoœci wagi maksymalnej
-	shufps xmm7, xmm7, 0h			; powielenie jej na wszystkie 4 pola
+	SHUFPS xmm7, xmm7, 0h			; powielenie jej na wszystkie 4 pola
 	CVTDQ2PS xmm7, xmm7				; konwersja z double word na single-precision float
 
 	DIVPS xmm5, xmm7				; zmiana zakresu z 0-255 na 0-1
@@ -208,25 +212,25 @@ blendLoop:
 	CVTTPS2DQ xmm1, xmm1			; konwersja z single-precision na double words z obciêciem
 	CVTTPS2DQ xmm2, xmm2			; konwersja z single-precision na double words z obciêciem
 	
-	movdqu [rgba], xmm1				; pobranie wartoœci do struktury w celu wy³uskania parametru 'a'
+	MOVDQU [rgba], xmm1				; pobranie wartoœci do struktury w celu wy³uskania parametru 'a'
 	mov [rgba.Pixel].a, 255			; przywrócenie domyœlnej wartoœci parametru 'a'
-	movdqu xmm1, [rgba]				; za³adowanie poprawnych wartoœci do rejestru
+	MOVDQU xmm1, [rgba]				; za³adowanie poprawnych wartoœci do rejestru
 
-	movdqu [ebx + ecx*SIZEOF DWORD], xmm1	    ; nadpisanie wartoœci w komórkach bitmapy bazowej
+	MOVDQU [ebx + ecx*SIZEOF DWORD], xmm1	    ; nadpisanie wartoœci w komórkach bitmapy bazowej
 
 	add ecx, bytesPerPixel			; zwiêkszenie licznika o jeden piksel który zosta³ ju¿ obliczony
 	cmp ecx, stop					; sprawdzenie czy nale¿y ju¿ skoñczyæ
-jne blendLoop
-
+jne blendLoop						; jeœli ecx != stop to wróæ na pocz¹tek pêtli, w przeciwnym wypadku
+									; zakoñcz obliczenia
 done:
-	mov eax, 1
-	ret
+	mov eax, 1						; zapisanie informacji wyjœciowej ( wszystko zosta³o wykonane poprawnie)
+	ret								; powrót z procedury
 	
-endProcWithSSE2AvailableErr:
+endProcWithSSE2AvailableErr:		; zakoñczenie procedury z b³edem który jest ju¿ za³adowany w akumlatorze
 endProcWithCPUIDErr:
-	ret
+	ret								; powrót z procedury 
 untrustedCheckSSE2Proc:
-	mov eax, -2
-	ret
+	mov eax, -2						; za³adowanie kodu b³edu 
+	ret								; oraz powrót z procedury
 blendTwoImages ENDP
-END 
+END									; koniec pliku
