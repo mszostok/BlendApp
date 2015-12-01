@@ -42,7 +42,7 @@
     </Reference>
     <Reference Include="BlendAlgorithmASM, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Debug\BlendAlgorithmASM.dll</HintPath>
+      <HintPath>..\Release\BlendAlgorithmASM.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
