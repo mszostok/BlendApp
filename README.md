@@ -1,50 +1,49 @@
-# ![](BlendApp/Images/logo.bmp) BlendApp
+# ![](http://i.imgur.com/du0LvG2.png?1) BlendApp
 
-Aplikacja stworzona z myÅ›lÄ… o waÅ¼onym nakÅ‚adaniu obrazÃ³w w formacie .bmp, a tym samy podglÄ…du wyniku dziaÅ‚ania algorytmu.
-
-## Co umoÅ¼liwia ?
-
-#### 1) Wybranie liczby wÄ…tkÃ³w
-
-UÅ¼ytkownik moÅ¼e zadaÄ‡ liczbÄ™ wÄ…tkÃ³w, ktÃ³ra oznacza na ile czÄ™Å›ci zostanÄ… podzielone obrazy, 
-
-wywoÅ‚ujÄ…c dla kaÅ¼dej z nich algorytm dodawania obrazÃ³w.
-
-Dodatkowo program dostarcza rÃ³wnieÅ¼ informacji jakÄ… jest rekomendowana tj. wolna liczba wÄ…tkÃ³w do wykorzystania.
+Aplikacja stworzona z myœl¹ o wa¿onym nak³adaniu obrazów w formacie .bmp, a tym samy podgl¹du wyniku dzia³ania algorytmu.
 
 
-#### 2) Wybranie biblioteki
+# **Co umo¿liwia ?**
 
-MoÅ¼liwe jest wskazanie odpowiedniej biblioteki napisanej w jÄ™zku asemblera lub C#, 
-ktÃ³ra udostÄ™pnia funkcjÄ™ realizujÄ…cÄ… **ten sam** algorytm waÅ¼onego nakÅ‚adania obrazÃ³w. 
+#### **1) Wybranie liczby w¹tków**
 
-#### 3) Podanie wagi nakÅ‚adanego obrazu
+U¿ytkownik mo¿e zadaæ liczbê w¹tków, która oznacza na ile czêœci zostan¹ podzielone obrazy, 
 
-WartoÅ›Ä‡ ta powinna byÄ‡ z przedziaÅ‚u ***od 0 do 255*** i oznacza ona z jakÄ… "siÅ‚Ä…" zostanie naÅ‚oÅ¼ony drugi obraz, na obraz bazowy. 
+wywo³uj¹c dla ka¿dej z nich algorytm dodawania obrazów.
 
-  * 0 - obraz nakÅ‚adany nie bÄ™dzie widoczny
-    * ...
-    * ...
-  * 255 - obraz bazowy zostanie caÅ‚kowicie przysÅ‚oniÄ™ty przez obraz nakÅ‚adany
-
-#### 5) WyÅ›wietlenie obrazu wynikowego
-
-KlikajÄ…c przycisk *PoÅ‚Ä…cz* zostaniemy poproszeni o wskazanie miejsca gdzie naleÅ¼y zapisaÄ‡ obraz wynikowy, 
-a nastÄ™pnie zostanie on wyÅ›wietlony w oknie aplikacji.
+##### Dodatkowo program dostarcza równie¿ informacji jak¹ jest rekomendowana tj. wolna liczba w¹tków do wykorzystania.
 
 
-## ZaleÅ¼noÅ›ci i ograniczenia
+#### **2) Wybranie biblioteki**
 
-Aktualna wersja aplikacji byÅ‚a pisana i testowana w Å›rodowisku 32-bitowy. Jednak uruchomienie jej w systemie 64-bitowy rÃ³wnieÅ¼ nie powinno przysporzyÄ‡ problemÃ³w.
+Mo¿liwe jest wskazanie odpowiedniej biblioteki napisanej w jêzku asemblera lub C#, 
+która udostêpnia funkcjê realizuj¹c¹ **ten sam** algorytm wa¿onego nak³adania obrazów. 
+
+#### **3) Podanie wagi nak³adanego obrazu**
+
+Wartoœæ ta powinna byæ z przedzia³u ***od 0 do 255*** i oznacza ona z jak¹ "si³¹" zostanie na³o¿ony drugi obraz, na obraz bazowy. 
+
+  * 0 - obraz nak³adany nie bêdzie widoczny
+    * 
+    * 
+  * 255 - obraz bazowy zostanie ca³kowicie przys³oniêty przez obraz nak³adany
+
+#### **5) Wyœwietlenie obrazu wynikowego**
+
+Klikaj¹c przycisk *Po³¹cz* zostaniemy poproszeni o wskazanie miejsca gdzie nale¿y zapisaæ obraz wynikowy, 
+a nastêpnie zostanie on wyœwietlony w oknie aplikacji.
+
+
+# **Zale¿noœci i ograniczenia**
+
+Aktualna wersja aplikacji by³a pisana i testowana w œrodowisku *32-bitowy*. Jednak uruchomienie jej w systemie *64-bitowy* równie¿ nie powinno przysporzyæ problemów.
 
  * Ograniczenia
-    * ObsÅ‚ugiwanym formatem pliku jest **24-bitowa grafika bitmapowa bez kompresji RLE o DPI rÃ³wnym 96**,
-    ograniczenia te nie wynikajÄ… z zaimplementowanego algorytmu, tylko z zastosowanej technologi WPF 
-    odczytujÄ…cej bitmapy.
+    * Obs³ugiwanym formatem pliku jest **24-bitowa grafika bitmapowa bez kompresji RLE o DPI równym 96**,
+    ograniczenia te nie wynikaj¹ z zaimplementowanego algorytmu, tylko z zastosowanej technologi WPF 
+    odczytuj¹cej bitmapy.
 
-License
--------
-
+# **License**
 
 
 ```
@@ -62,4 +61,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ```
-Copyright (C) 2015 **Mateusz Szostok**
+#### Copyright (C) 2015 **Mateusz Szostok**
