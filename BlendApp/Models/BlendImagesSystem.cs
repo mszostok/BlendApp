@@ -120,8 +120,8 @@
 
             foreach (BitmapImage bmp in bmpList)
             {
-                maxWidth = Math.Min(maxWidth, (int)Math.Round(bmp.Width));
-                maxHeight = Math.Min(maxHeight, (int)Math.Round(bmp.Height));
+                maxWidth = Math.Min(maxWidth, (int)Math.Floor(bmp.Width));
+                maxHeight = Math.Min(maxHeight, (int)Math.Floor(bmp.Height));
             }
         }
 
@@ -132,22 +132,25 @@
         {
             foreach (BitmapImage bmp in bmpList)
             {
-                CroppedBitmap cb = new CroppedBitmap(bmp, new Int32Rect(0, 0, maxWidth, maxHeight));
+                if (bmp.Width != maxWidth || bmp.Height != maxHeight)
+                {
+                    CroppedBitmap cb = new CroppedBitmap(bmp, new Int32Rect(0, 0, maxWidth, maxHeight));
 
-                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-                MemoryStream memoryStream = new MemoryStream();
-                BitmapImage croppedBmp = new BitmapImage();
+                    JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                    MemoryStream memoryStream = new MemoryStream();
+                    BitmapImage croppedBmp = new BitmapImage();
 
-                encoder.Frames.Add(BitmapFrame.Create(cb));
-                encoder.Save(memoryStream);
+                    encoder.Frames.Add(BitmapFrame.Create(cb));
+                    encoder.Save(memoryStream);
 
-                croppedBmp.BeginInit();
-                croppedBmp.StreamSource = new MemoryStream(memoryStream.ToArray());
-                croppedBmp.EndInit();
+                    croppedBmp.BeginInit();
+                    croppedBmp.StreamSource = new MemoryStream(memoryStream.ToArray());
+                    croppedBmp.EndInit();
 
-                croppedBmpList.Add(croppedBmp);
+                    croppedBmpList.Add(croppedBmp);
 
-                memoryStream.Close();
+                    memoryStream.Close();
+                }
             }
         }
 

@@ -113,6 +113,10 @@
                 blendSystem.BlendImages();
                 ShowResult();
             }
+            catch (OutOfMemoryException)
+            {
+                MessageBox.Show("Niestety plik jest za duży. Proszę zmniejszyć rozdzielczość pliku.", "Bład");  
+            }
             catch (UriFormatException)
             {
                 MessageBox.Show("Brak poprawnych ścieżek!", "Bład");                
@@ -125,10 +129,7 @@
             {
                 MessageBox.Show("Proszę zapisać plik pod inną nazwą.", "Bład");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format("Bład : {0}", ex.Message), "Bład");
-            }
+
 
 
         }

@@ -100,7 +100,7 @@
         #endregion
 
         #region Images paths Img1Path Img2Path
-        string img1Path = "C:\\Users\\indianer\\Pictures\\blendApp\\czerw.bmp";
+        string img1Path = "";
         public string Img1Path
         {
             get
@@ -117,7 +117,7 @@
             }
         }
 
-        string img2Path = "C:\\Users\\indianer\\Pictures\\blendApp\\ziel.bmp";
+        string img2Path = "";
         public string Img2Path
         {
             get
