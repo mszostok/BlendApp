@@ -9,6 +9,7 @@
     using System.Threading;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
 
     /// <summary>
     /// Obiekt tej klasy odpowiedzialny jest zarówno za wczytanie jak i nałożenie
@@ -30,18 +31,21 @@
 
         private int threadPixelsStep;  // ilość pikseli przypadająca na jeden wątek
 
-        private byte[] img1PixelsByte;    // tablica pikseli na której wykonywane 
+        private byte[] img1PixelsByte;    // tablica pikseli w postaci bajtów
         private byte[] img2PixelsByte;
 
-        private int[] img1PixelsInt;    
+        private int[] img1PixelsInt;    // tablica pikseli w postaci liczb całkowitych
         private int[] img2PixelsInt;
 
-        private int** intBitmapsList;
-        private byte[][] byteBitmapsList;
+        private int** intBitmapsList;        //wskaźnik na listę tablic pikseli w postaci bajtów (dla asm)
+        private byte[][] byteBitmapsList;   // wskaźnik na listę tablic piksli w postaci bajtów (dla C#)
 
         private List<Thread> threadList;            // lista utworzonych wątków podczas wykonywania obliczeń
         private List<BitmapImage> bmpList;         // lista wczytanych plików graficznych podanych przez użytkownika
         private List<BitmapImage> croppedBmpList; // lista plików graficznych o tych samych rozmiarach
+
+        private List<int> threadResult;         // lista przechowująca wartości zwracane przez wyjątki (informację o powodzeniu/błedzie wykonania)
+
         #endregion
 
         #region Constructors
@@ -56,6 +60,7 @@
             threadList = new List<Thread>();
             bmpList = new List<BitmapImage>();
             croppedBmpList = new List<BitmapImage>();
+            threadResult = new List<int>();
             maxWidth = maxHeight = int.MaxValue;
 
         }
@@ -74,7 +79,7 @@
             saveFileDialog.Filter = "Pliki BMP | *.bmp";
             if (saveFileDialog.ShowDialog() == true)
             {
-
+                
                 FileStream saveStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate);
                 BmpBitmapEncoder encoder = new BmpBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(resultBitmap));
@@ -82,7 +87,11 @@
                 saveStream.Close();
 
                 //ustawienie ścieżki dla podglądu wyniku działania programu
-                  appSettings.ResultImage = saveFileDialog.FileName;
+                appSettings.ResultImage = saveFileDialog.FileName;
+            }
+            else
+            {
+                appSettings.ResultTime = " Nie można wyświetlić podglądu obrazu, jeśli nie został on zapisany. \n\n\n\n\n\n\n\n\n\n\t\t\t" + appSettings.ResultTime;
             }
         }
 
@@ -176,8 +185,10 @@
             {
                 int* coordsPtr = convertCoords(coords);
 
-                   var t = new Thread(() =>
-                                blendTwoImages(intBitmapsList, coordsPtr, (int)appSettings.Alpha));
+                   var t = new Thread(() => {
+                       int result = blendTwoImages(intBitmapsList, coordsPtr, (int)appSettings.Alpha);
+                       threadResult.Add(result);
+                   });
                    threadList.Add(t);
             }
             else
@@ -262,6 +273,7 @@
                 byteBitmapsList[0] = img1PixelsByte;
                 byteBitmapsList[1] = img2PixelsByte;
             }
+
             #region Main Algorithm
 
             int bytesPerPixel =  img1Bitmap.Format.BitsPerPixel / 8;
@@ -276,11 +288,11 @@
              * 
              * W przeciwnym wypadku zostaje utworzonych n regularnych wątków.
              */
-            if ( threadPixelsStep * bytesPerPixel * appSettings.ThreadNumber != arraySize) 
+            if (threadPixelsStep * bytesPerPixel * appSettings.ThreadNumber != arraySize)
             {
-                int delta = pixelsNumber - ( threadPixelsStep * appSettings.ThreadNumber);               
+                int delta = pixelsNumber - (threadPixelsStep * appSettings.ThreadNumber);
 
-                createThreadList(appSettings.ThreadNumber-1);   // utworzenie n-1 wątków
+                createThreadList(appSettings.ThreadNumber - 1);   // utworzenie n-1 wątków
 
                 int start = threadPixelsStep * (appSettings.ThreadNumber - 1);
                 int[] coords = { start, arraySize / bytesPerPixel };
@@ -310,8 +322,20 @@
 
 
             clock.Stop();
-            appSettings.ResultTime = "Czas wykonania " + clock.ElapsedMilliseconds.ToString() + " ms.";
 
+            if (appSettings.LoadAsmLibrary)
+            {
+                foreach (int result in threadResult)
+                {
+                    switch (result)
+                    {
+                        case -2: throw new Exception("Bład ASM: Zostały wykryte przekłamania w procedurze.");
+                        case -1: throw new Exception("Bład ASM: Rozkaz CPUID nie jest wspierany.");
+                        case 0: throw new Exception("Bład ASM: Instrukcje SSE2 są niedostępne.");
+                    }
+                }
+            }
+            appSettings.ResultTime = "Czas wykonania " + clock.ElapsedMilliseconds.ToString() + " ms.";
             #endregion
 
             #region Save Result Bitmap

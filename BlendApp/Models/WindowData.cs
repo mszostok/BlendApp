@@ -7,6 +7,7 @@ namespace BlendApp.Models
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Windows;
 
 
     public class WindowData : INotifyPropertyChanged
@@ -56,6 +57,23 @@ namespace BlendApp.Models
                     RaisePropertyChanged("Title");
                     RaisePropertyChanged("IsExpanded");
                 }
+            }
+        }
+        #endregion
+
+        #region WaitingScreen
+        private bool waitingScreen = false;
+
+        public object WaitingScreen
+        {
+            get
+            {
+                return waitingScreen ? Visibility.Visible : Visibility.Collapsed;
+            }
+            set
+            {
+                waitingScreen = (bool)value;
+                RaisePropertyChanged("WaitingScreen");
             }
         }
         #endregion

@@ -105,17 +105,24 @@
         /// </summary>
         public void BlendImages()
         {
-            AppSettings.ResultImage = "";
-            BlendImagesSystem blendSystem = new BlendImagesSystem(AppSettings);
+            Window.WaitingScreen = true;
+
 
             try
             {
-                blendSystem.BlendImages();
+                for (int i = 1; i < 65; ++i)
+                {
+                    AppSettings.ThreadNumber = i;
+                    AppSettings.ResultImage = "";
+                    BlendImagesSystem blendSystem = new BlendImagesSystem(AppSettings);
+                    blendSystem.BlendImages();
+                }
+                    
                 ShowResult();
             }
             catch (OutOfMemoryException)
             {
-                MessageBox.Show("Niestety plik jest za duży. Proszę zmniejszyć rozdzielczość pliku.", "Bład");  
+                MessageBox.Show("Niestety plik jest za duży. Proszę zmniejszyć rozdzielczość pliku.", "Bład");
             }
             catch (UriFormatException)
             {
@@ -129,7 +136,14 @@
             {
                 MessageBox.Show("Proszę zapisać plik pod inną nazwą.", "Bład");
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Bład");
+            }
+            finally
+            {
+                Window.WaitingScreen = false;
+            }
 
 
         }

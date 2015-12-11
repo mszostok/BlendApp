@@ -1,7 +1,7 @@
 ﻿<Window x:Class="BlendApp.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Height="470" Width="600" MinHeight="470" MinWidth="600"
+        Height="470" Width="600" MinHeight="470" MinWidth="650"
 	Title="BlendApp (c) Mateusz Szostok">
     <Window.Resources>
         <!-- Animated Expander Button's Template-->
@@ -160,11 +160,11 @@
         <Grid Margin="0,80,0,0" Background="#FF1B1B1C">
 
             <!-- Podgląd wynik, domyślnie przesłonięte przez expander -->
-            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,20"  Source="{Binding AppSettings.ResultImage}"/>
+            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,20"  Source="{Binding AppSettings.ResultImage}" ToolTip="" Tag=""/>
             <Label HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0,0,0,-2" 
                    Foreground="White" Content="{Binding AppSettings.ResultTime}" />
         </Grid>
-        <!--  -->
+ 
         <Expander Template="{StaticResource StretchyExpanderTemp}" OverridesDefaultStyle="True"
                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" 
                   IsExpanded="{Binding Window.IsExpanded, UpdateSourceTrigger=PropertyChanged}">
@@ -246,7 +246,21 @@
 
             </Grid>
         </Expander>
+        
+        
+        <!-- Informacja o przetwarzaniu -->
+        <Border BorderBrush="Black" BorderThickness="1" Background="#80000000"  Visibility="{Binding Window.WaitingScreen}" Grid.RowSpan="3" Cursor="Wait">
+            <Grid>
+               
+                <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="155" Margin="0,70,0,0" Stroke="Black" VerticalAlignment="Stretch" />
+                <Rectangle Fill="#FF00B9A0" HorizontalAlignment="Left"  VerticalAlignment="Center" Margin="0,220,300,0"  Width="250" Height="4" />
+                        
+             
+                <TextBlock Margin="131,194,283,215" Text="Proszę czekać..." HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="24" Foreground="Black" Cursor="Wait" FontFamily="Arial"/>
+                <TextBlock Margin="134,230,242,183" Text="Trwa nakładanie obrazów..." HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Foreground="Black"/>
 
+            </Grid>
+        </Border>
 
     </Grid>
 

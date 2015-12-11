@@ -14,6 +14,7 @@
         #region ICommand Members  
         public override bool CanExecute(object parameter)
         {
+            
             //jeśli jest jakiś bład należy zablokować przycisk
             return String.IsNullOrWhiteSpace(viewModel.AppSettings.Error);
         }
