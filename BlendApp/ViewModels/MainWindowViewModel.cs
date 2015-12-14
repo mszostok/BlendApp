@@ -110,14 +110,9 @@
 
             try
             {
-                for (int i = 1; i < 65; ++i)
-                {
-                    AppSettings.ThreadNumber = i;
-                    AppSettings.ResultImage = "";
-                    BlendImagesSystem blendSystem = new BlendImagesSystem(AppSettings);
-                    blendSystem.BlendImages();
-                }
-                    
+                AppSettings.ResultImage = "";
+                BlendImagesSystem blendSystem = new BlendImagesSystem(AppSettings);
+                blendSystem.BlendImages();
                 ShowResult();
             }
             catch (OutOfMemoryException)
