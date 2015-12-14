@@ -36,7 +36,7 @@ a następnie zostanie on wyświetlony w oknie aplikacji.
 
 # **Zależności i ograniczenia**
 
-Aktualna wersja stabilna (v1.0) została przetestowana zarówno na środowiku *32-bitowym* jak i *64-bitowym*. Nie zostały zauważone żadne nieprawidłowości, a pliki wykonalne dla danej platformy można znaleźć w folderze ***Pliki_wykonywalne***.
+Aktualna wersja stabilna została przetestowana zarówno na środowiku *32-bitowym* jak i *64-bitowym*. Nie zostały zauważone żadne nieprawidłowości, a pliki wykonalne można znaleźć w folderze ***Pliki_wykonywalne***.
 
  * Ograniczenia
     * Obsługiwanym formatem pliku jest **24-bitowa grafika bitmapowa bez kompresji RLE o DPI równym 96**,
