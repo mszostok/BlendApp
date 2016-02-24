@@ -12,8 +12,8 @@
         /// wątek będzie wykoywał obliczenia</param>
         /// <param name="stop">
         /// definiuje ineks końcowy na którym wątek zatrzyma obliczenia</param>
-      //  public static void blendToImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop)
-        public static void blendToImages(byte[][]bitmaps, int[]coords, int alpha)
+      //  public static void blendTwoImages(byte[] imgBottom, byte[] imgTop, float alpha, int start, int stop)
+        public static void blendTwoImages(byte[][]bitmaps, int[]coords, int alpha)
         {
             // ustawienie kanału alfa (przeźroczystości)
             float alphaTop = (float)alpha / 255.0F;

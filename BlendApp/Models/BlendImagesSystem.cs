@@ -18,7 +18,7 @@
     public unsafe class BlendImagesSystem
     {
         [DllImport("BlendAlgorithm.dll")]
-        public static extern void blendToImages(byte[][] bitmaps, int[] coords, int alpha);
+        public static extern void blendTwoImages(byte[][] bitmaps, int[] coords, int alpha);
 
         [DllImport("BlendAlgorithmASM.dll")]
         public static unsafe extern int blendTwoImages(int** bitmaps, int* coords, int alpha);
@@ -196,7 +196,7 @@
                 int[] coordsTmp = { coords[0], coords[1] };
                 
                 var t = new Thread(() =>
-                BlendAlgorithm.BlendImage.blendToImages(byteBitmapsList, coordsTmp, (int)appSettings.Alpha));
+                BlendAlgorithm.BlendImage.blendTwoImages(byteBitmapsList, coordsTmp, (int)appSettings.Alpha));
                 threadList.Add(t);
             }
            
@@ -320,7 +320,7 @@
                 th.Join();
             }
 
-
+            
             clock.Stop();
 
             if (appSettings.LoadAsmLibrary)
